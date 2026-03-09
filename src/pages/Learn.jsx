@@ -387,7 +387,7 @@ export default function Learn() {
                 <h2 style={{ fontSize: "1.3rem", fontWeight: 700, color: "#111827", margin: "0 0 0.25rem" }}>Start with the basics</h2>
                 <p style={{ fontSize: "0.85rem", color: "#6b7280", margin: 0 }}>New to crypto? These guides will get you started.</p>
               </div>
-              <button onClick={() => setActiveCategory("Crypto basics")} style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "9999px", padding: "0.4rem 1rem", fontSize: "0.8rem", fontWeight: 600, color: "#1652f0", cursor: "pointer", background: "white" }}>
+              <button onClick={() => setActiveCategory("Crypto basics")} style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: "9999px", padding: "0.4rem 1rem", fontSize: "0.8rem", fontWeight: 600, color: "#1652f0", cursor: "pointer" }}>
                 View all basics →
               </button>
             </div>
