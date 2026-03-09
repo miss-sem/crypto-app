@@ -22,6 +22,7 @@ export default function AdvancedTrader() {
       >
         {/* Left — dark card with trading screenshot */}
         <div
+          className="advancedtrader-img"
           style={{
             background: "#111827",
             borderRadius: "1.75rem",
@@ -41,7 +42,7 @@ export default function AdvancedTrader() {
         </div>
 
         {/* Right — text */}
-        <div>
+        <div className="advancedtrader-text">
           <h2
             style={{
               fontSize: "clamp(2rem, 3.5vw, 3rem)",

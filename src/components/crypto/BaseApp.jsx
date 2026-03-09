@@ -23,6 +23,7 @@ export default function BaseApp() {
       >
         {/* Left — light card with phone screenshot */}
         <div
+          className="baseapp-img"
           style={{
             borderRadius: "1.75rem",
             overflow: "hidden",
@@ -38,7 +39,7 @@ export default function BaseApp() {
         </div>
 
         {/* Right — text */}
-        <div>
+        <div className="baseapp-text">
           {/* Badge */}
           <div
             style={{

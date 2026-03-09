@@ -46,7 +46,7 @@ export default function Home() {
         </div>
 
         {/* Right — white panel with CTA */}
-        <div className="hero-right flex items-center bg-white" style={{ padding: "2rem 8rem 2rem 2rem" }}>
+        <div className="hero-right hero-text flex items-center bg-white" style={{ padding: "2rem 8rem 2rem 2rem" }}>
           <div className="hero-right-inner" style={{ width: "75%" }}>
             <h1
               className="hero-h1 font-bold text-gray-900"

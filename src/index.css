@@ -192,6 +192,15 @@ body {
   .learn-featured {
     grid-template-columns: 1fr !important;
   }
+  .baseapp-text {
+    order: -1;
+  }
+  .advancedtrader-text {
+    order: -1;
+  }
+  .hero-text {
+    order: -1;
+  }
   .learn-topics-grid {
     grid-template-columns: repeat(4, 1fr) !important;
   }
