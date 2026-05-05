@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import coinbaseLogo from "../assets/coinbaseLogoNavigation-4.svg";
+import { useAuth } from "../context/AuthContext";
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 function GoogleIcon() {
@@ -311,13 +314,57 @@ const TYPE_LABELS = { personal: "Personal", business: "Business", developer: "De
 
 function DetailsStep({ accountType, onBack, email, formData, setFormData }) {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const update = (key) => (e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }));
   const isPersonal = accountType === "personal";
   const isBusiness = accountType === "business";
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    navigate("/");
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const name = isPersonal
+      ? `${formData.firstName} ${formData.lastName}`.trim()
+      : isBusiness
+      ? formData.companyName
+      : formData.firstName;
+
+    setLoading(true);
+    try {
+      const regRes = await fetch(`${API}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password: formData.password }),
+      });
+      const regData = await regRes.json();
+      if (!regRes.ok) { setError(regData.message || "Registration failed."); return; }
+
+      // Auto-login after successful registration
+      const loginRes = await fetch(`${API}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password: formData.password }),
+      });
+      const loginData = await loginRes.json();
+      if (loginRes.ok) {
+        login(loginData.user);
+        navigate("/explore");
+      } else {
+        navigate("/signin");
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -368,17 +415,26 @@ function DetailsStep({ accountType, onBack, email, formData, setFormData }) {
           <li>Contains a number or special character</li>
         </ul>
 
+        {error && (
+          <p style={{ color: "#f87171", fontSize: "0.85rem", textAlign: "center", margin: 0 }}>{error}</p>
+        )}
+
         <button
           type="submit"
-          style={{ width: "100%", padding: "0.85rem", background: "#3d5bf0", color: "white", border: "none", borderRadius: "9999px", fontSize: "1rem", fontWeight: 600, cursor: "pointer", marginTop: "0.25rem" }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "#2f4de0")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "#3d5bf0")}
+          disabled={loading}
+          style={{ width: "100%", padding: "0.85rem", background: loading ? "#5a6fd6" : "#3d5bf0", color: "white", border: "none", borderRadius: "9999px", fontSize: "1rem", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", marginTop: "0.25rem" }}
+          onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#2f4de0"; }}
+          onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = "#3d5bf0"; }}
         >
-          Create account
+          {loading ? "Creating account…" : "Create account"}
         </button>
       </form>
 
-      <p style={{ textAlign: "center", fontSize: "0.72rem", color: "#6b7280", marginTop: "1rem", lineHeight: 1.55 }}>
+      <p style={{ textAlign: "center", fontSize: "0.78rem", color: "#f87171", marginTop: "1rem" }}>
+        Demo app — do not use your real password.
+      </p>
+
+      <p style={{ textAlign: "center", fontSize: "0.72rem", color: "#6b7280", marginTop: "0.5rem", lineHeight: 1.55 }}>
         By creating an account, you agree to our{" "}
         <a href="#" style={{ color: "#6b7280", textDecoration: "underline" }}>Terms of Service</a>
         {" "}and{" "}

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import coinbaseLogo from "../../assets/coinbaseLogoNavigation-4.svg";
+import { useAuth } from "../../context/AuthContext";
 import navigationUpsell from "../../assets/navigation-upsell.png";
 import onchainPayment from "../../assets/onchain_payment_protocol.png";
 import institutionsUpsell from "../../assets/institutions_upsell.png";
@@ -423,12 +424,19 @@ function MobileNavItem({ navItem, onClose }) {
 
 // ─── Main Navbar ──────────────────────────────────────────────────────────────
 export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [signinHovered, setSigninHovered] = useState(false);
   const [searchHovered, setSearchHovered] = useState(false);
   const [globeHovered, setGlobeHovered] = useState(false);
   const closeTimer = useRef(null);
+
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
 
   useEffect(() => {
     if (mobileOpen) {
@@ -529,24 +537,49 @@ export default function Navbar() {
               <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
             </svg>
           </button>
-          {/* Sign in — pill */}
-          <Link
-            to="/signin"
-            onMouseEnter={() => setSigninHovered(true)}
-            onMouseLeave={() => setSigninHovered(false)}
-            style={{ paddingLeft:"1.5rem", paddingRight:"1.5rem", paddingTop:"0.6rem", paddingBottom:"0.6rem", backgroundColor: signinHovered ? "#eff6ff" : "#e5e7eb", borderRadius:"9999px", fontWeight:"600", fontSize:"1rem", color:"#111827", textDecoration:"none", transition:"background-color 0.15s" }}
-            className="hidden lg:inline-flex items-center"
-          >
-            Sign in
-          </Link>
-          {/* Sign up — blue pill */}
-          <Link
-            to="/signup"
-            style={{paddingLeft:"1.5rem", paddingRight:"1.5rem", paddingTop:"0.6rem", paddingBottom:"0.6rem", backgroundColor:"#2563eb", borderRadius:"9999px", fontWeight:"600", fontSize:"1rem", color:"#ffffff", textDecoration:"none"}}
-            className="inline-flex items-center transition-colors hover:opacity-90"
-          >
-            Sign up
-          </Link>
+          {user ? (
+            <>
+              {/* Profile pill */}
+              <Link
+                to="/profile"
+                onMouseEnter={() => setSigninHovered(true)}
+                onMouseLeave={() => setSigninHovered(false)}
+                style={{ paddingLeft:"1.5rem", paddingRight:"1.5rem", paddingTop:"0.6rem", paddingBottom:"0.6rem", backgroundColor: signinHovered ? "#eff6ff" : "#e5e7eb", borderRadius:"9999px", fontWeight:"600", fontSize:"1rem", color:"#111827", textDecoration:"none", transition:"background-color 0.15s" }}
+                className="hidden lg:inline-flex items-center"
+              >
+                Profile
+              </Link>
+              {/* Sign out — blue pill */}
+              <button
+                onClick={handleLogout}
+                style={{ paddingLeft:"1.5rem", paddingRight:"1.5rem", paddingTop:"0.6rem", paddingBottom:"0.6rem", backgroundColor:"#2563eb", borderRadius:"9999px", fontWeight:"600", fontSize:"1rem", color:"#ffffff", border:"none", cursor:"pointer" }}
+                className="inline-flex items-center transition-colors hover:opacity-90"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Sign in — pill */}
+              <Link
+                to="/signin"
+                onMouseEnter={() => setSigninHovered(true)}
+                onMouseLeave={() => setSigninHovered(false)}
+                style={{ paddingLeft:"1.5rem", paddingRight:"1.5rem", paddingTop:"0.6rem", paddingBottom:"0.6rem", backgroundColor: signinHovered ? "#eff6ff" : "#e5e7eb", borderRadius:"9999px", fontWeight:"600", fontSize:"1rem", color:"#111827", textDecoration:"none", transition:"background-color 0.15s" }}
+                className="hidden lg:inline-flex items-center"
+              >
+                Sign in
+              </Link>
+              {/* Sign up — blue pill */}
+              <Link
+                to="/signup"
+                style={{ paddingLeft:"1.5rem", paddingRight:"1.5rem", paddingTop:"0.6rem", paddingBottom:"0.6rem", backgroundColor:"#2563eb", borderRadius:"9999px", fontWeight:"600", fontSize:"1rem", color:"#ffffff", textDecoration:"none" }}
+                className="inline-flex items-center transition-colors hover:opacity-90"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
 
           {/* Mobile hamburger */}
           <button
@@ -640,22 +673,31 @@ export default function Navbar() {
                 <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
               </svg>
             </button>
-            <Link
-              to="/signin"
-              onClick={() => setMobileOpen(false)}
-              style={{
-                padding: "0.55rem 1.5rem",
-                backgroundColor: "transparent",
-                border: "1.5px solid #d1d5db",
-                borderRadius: "9999px",
-                fontWeight: 600,
-                fontSize: "0.95rem",
-                color: "#111827",
-                textDecoration: "none",
-              }}
-            >
-              Sign in
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  style={{ padding: "0.55rem 1.5rem", backgroundColor: "transparent", border: "1.5px solid #d1d5db", borderRadius: "9999px", fontWeight: 600, fontSize: "0.95rem", color: "#111827", textDecoration: "none" }}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={() => { setMobileOpen(false); handleLogout(); }}
+                  style={{ padding: "0.55rem 1.5rem", backgroundColor: "#2563eb", border: "none", borderRadius: "9999px", fontWeight: 600, fontSize: "0.95rem", color: "#fff", cursor: "pointer" }}
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/signin"
+                onClick={() => setMobileOpen(false)}
+                style={{ padding: "0.55rem 1.5rem", backgroundColor: "transparent", border: "1.5px solid #d1d5db", borderRadius: "9999px", fontWeight: 600, fontSize: "0.95rem", color: "#111827", textDecoration: "none" }}
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       )}

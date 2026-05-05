@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import WarningBanner from "./components/layout/WarningBanner";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Home from "./pages/Home";
@@ -7,6 +9,7 @@ import AssetDetail from "./pages/AssetDetail";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Learn from "./pages/Learn";
+import Profile from "./pages/Profile";
 
 const AUTH_ROUTES = ["/signin", "/signup"];
 
@@ -15,6 +18,7 @@ function AppLayout() {
   const isAuth = AUTH_ROUTES.includes(pathname);
   return (
     <>
+      <WarningBanner />
       {!isAuth && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
@@ -23,6 +27,7 @@ function AppLayout() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/learn" element={<Learn />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       {!isAuth && <Footer />}
     </>
@@ -32,7 +37,9 @@ function AppLayout() {
 function App() {
   return (
     <BrowserRouter>
-      <AppLayout />
+      <AuthProvider>
+        <AppLayout />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

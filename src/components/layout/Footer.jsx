@@ -143,6 +143,16 @@ export default function Footer() {
         </a>
       </div>
 
+      {/* Demo disclaimer */}
+      <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "0.5rem", padding: "0.75rem 1.25rem", marginBottom: "1.25rem", display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "0.1rem" }}>
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p style={{ fontSize: "0.78rem", color: "#7f1d1d", margin: 0, lineHeight: 1.55 }}>
+          <strong>Demo project only.</strong> This is a student-built application for educational purposes. Do not enter real personal information, financial data, or actual passwords. This site has no affiliation with Coinbase, Inc.
+        </p>
+      </div>
+
       {/* Bottom bar */}
       <div
         className="footer-bottom"

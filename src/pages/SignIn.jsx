@@ -1,23 +1,45 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import coinbaseLogo from "../assets/coinbaseLogoNavigation-4.svg";
+import { useAuth } from "../context/AuthContext";
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1 = email, 2 = password
+  const { login } = useAuth();
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleContinue(e) {
     e.preventDefault();
-    if (email.trim()) setStep(2);
+    if (email.trim()) { setError(""); setStep(2); }
   }
 
-  function handleSignIn(e) {
+  async function handleSignIn(e) {
     e.preventDefault();
-    // Cosmetic — just navigate home
-    navigate("/");
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.message || "Invalid email or password."); return; }
+      login(data.user);
+      navigate("/explore");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -216,24 +238,30 @@ export default function SignIn() {
                   </button>
                 </div>
 
+                {error && (
+                  <p style={{ color: "#f87171", fontSize: "0.85rem", marginBottom: "0.75rem", textAlign: "center" }}>
+                    {error}
+                  </p>
+                )}
                 <button
                   type="submit"
+                  disabled={loading}
                   style={{
                     width: "100%",
                     padding: "0.85rem",
-                    background: "#3d5bf0",
+                    background: loading ? "#5a6fd6" : "#3d5bf0",
                     color: "white",
                     border: "none",
                     borderRadius: "9999px",
                     fontSize: "1rem",
                     fontWeight: 600,
-                    cursor: "pointer",
+                    cursor: loading ? "not-allowed" : "pointer",
                     marginBottom: "0.75rem",
                   }}
-                  onMouseEnter={(e) => (e.target.style.background = "#2f4de0")}
-                  onMouseLeave={(e) => (e.target.style.background = "#3d5bf0")}
+                  onMouseEnter={(e) => { if (!loading) e.target.style.background = "#2f4de0"; }}
+                  onMouseLeave={(e) => { if (!loading) e.target.style.background = "#3d5bf0"; }}
                 >
-                  Sign in
+                  {loading ? "Signing in…" : "Sign in"}
                 </button>
 
                 <div style={{ textAlign: "center" }}>
@@ -254,6 +282,11 @@ export default function SignIn() {
             <Link to="/signup" style={{ color: "#4f87f5", fontWeight: 600, textDecoration: "none" }}>
               Sign up
             </Link>
+          </p>
+
+          {/* Demo note */}
+          <p style={{ textAlign: "center", fontSize: "0.78rem", color: "#f87171", lineHeight: 1.5, marginBottom: "0.75rem" }}>
+            Demo app — do not use your real password.
           </p>
 
           {/* Privacy note */}
